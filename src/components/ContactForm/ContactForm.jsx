@@ -1,36 +1,46 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { nanoid } from 'nanoid';
-import { addContact } from '../../Redux/contactsSlice';
+import { addContact, setContacts } from '../../Redux/contactsSlice';
 import styles from './ContactForm.module.css';
 
 const ContactForm = () => {
   const dispatch = useDispatch();
-  const contacts = useSelector((state) => state.contacts.contacts);
+  const [name, setName] = useState('');
+  const [number, setNumber] = useState('');
 
-  useEffect(() => {
-    localStorage.setItem('contacts', JSON.stringify(contacts));
-  }, [contacts]);
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    name === 'name' ? setName(value) : setNumber(value);
+  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    const name = e.target.name.value;
-    const number = e.target.number.value;
-
     dispatch(addContact({ id: nanoid(), name, number }));
-    e.target.reset();
+    setName('');
+    setNumber('');
   };
 
   return (
     <form onSubmit={handleSubmit} className={styles.formContainer}>
-      <label>
-        Name:
-        <input type="text" name="name" className={styles.inputField} required />
-      </label>
-      <label>
-        Number:
-        <input type="tel" name="number" className={styles.inputField} required />
-      </label>
+      <input
+        type="text"
+        name="name"
+        value={name}
+        onChange={handleChange}
+        className={styles.inputField}
+        placeholder="Enter name"
+        required
+      />
+      <input
+        type="tel"
+        name="number"
+        value={number}
+        onChange={handleChange}
+        className={styles.inputField}
+        placeholder="Enter phone number"
+        required
+      />
       <button type="submit" className={styles.submitButton}>Add contact</button>
     </form>
   );

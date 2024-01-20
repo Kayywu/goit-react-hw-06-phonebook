@@ -1,22 +1,35 @@
-import React from 'react';
-import { Provider } from 'react-redux';
-import store from '../Redux/store';
+import React, { useEffect } from 'react';
 import ContactForm from './ContactForm/ContactForm';
 import ContactList from './ContactList/ContactList';
 import Filter from './Filter/Filter';
+import { setContacts } from '../Redux/contactsSlice';
+import { useSelector, useDispatch } from 'react-redux';
 
-function App() {
+const App = () => {
+  const dispatch = useDispatch();
+  const contacts = useSelector((state) => state.contacts.list);
+
+  useEffect(() => {
+    const storedContacts = localStorage.getItem('contacts');
+    if (storedContacts) {
+      dispatch(setContacts(JSON.parse(storedContacts)));
+    }
+  }, [dispatch]);
+
+  useEffect(() => {
+    localStorage.setItem('contacts', JSON.stringify(contacts));
+  }, [contacts]);
+
   return (
-    <Provider store={store}>
-      <div className="appContainer">
-        <h1>Phonebook</h1>
-        <ContactForm />
-        <h2>Contacts</h2>
-        <Filter />
-        <ContactList />
-      </div>
-    </Provider>
+    <div className="appContainer">
+      <h1>Phonebook</h1>
+      <ContactForm />
+      <h2>Contacts</h2>
+      <Filter />
+      <ContactList />
+    </div>
   );
-}
+};
 
 export default App;
+
