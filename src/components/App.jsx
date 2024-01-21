@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import ContactForm from './ContactForm/ContactForm';
 import ContactList from './ContactList/ContactList';
 import Filter from './Filter/Filter';
@@ -9,6 +9,8 @@ const App = () => {
   const dispatch = useDispatch();
   const contacts = useSelector((state) => state.contacts.list);
 
+  const isMounted = useRef(true);
+
   useEffect(() => {
     const storedContacts = localStorage.getItem('contacts');
     if (storedContacts) {
@@ -17,8 +19,13 @@ const App = () => {
   }, [dispatch]);
 
   useEffect(() => {
-    localStorage.setItem('contacts', JSON.stringify(contacts));
+    if (isMounted.current) {
+      isMounted.current = false;
+    } else {
+      localStorage.setItem('contacts', JSON.stringify(contacts));
+    }
   }, [contacts]);
+
 
   return (
     <div className="appContainer">
